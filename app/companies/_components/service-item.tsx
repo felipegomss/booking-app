@@ -4,6 +4,8 @@ import { ServiceItemProps } from "@/app/types/service";
 import Image from "next/image";
 import React from "react";
 
+import favicon from "@/app/favicon.ico";
+
 export default function ServiceItem({ service }: ServiceItemProps) {
   return (
     <Card>
@@ -11,7 +13,7 @@ export default function ServiceItem({ service }: ServiceItemProps) {
         <div className="relative h-28 w-full">
           <Image
             alt=""
-            src={service?.imageUrl || null}
+            src={service?.imageUrl || favicon}
             fill
             className="object-cover rounded-xl w-full"
           />
