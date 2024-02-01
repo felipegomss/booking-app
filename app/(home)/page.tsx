@@ -1,13 +1,11 @@
-import Image from "next/image";
-import Header from "../_components/header";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import Search from "./_componentsa/search";
 import BookingItem from "../_components/booking-item";
+import Header from "../_components/header";
 import { db } from "../_lib/prisma";
+import { CompanyItemProps } from "../types/company";
 import CompanyItem from "./_componentsa/company-item";
-import { CompanyItemProps } from "../types/barbershop";
-
+import Search from "./_componentsa/search";
 import "./_componentsa/styles.css";
 
 export default async function Home() {
@@ -48,7 +46,14 @@ export default async function Home() {
           <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
             populares
           </h2>
-          <BookingItem />
+          <div className="flex gap-4 overflow-x-auto hidden-scroll">
+            {companies.map((company: CompanyItemProps, index: number) => (
+              <CompanyItem
+                company={company}
+                key={company.company?.id || index}
+              />
+            ))}
+          </div>{" "}
         </div>
       </div>
     </>
