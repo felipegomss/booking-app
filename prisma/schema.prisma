@@ -52,7 +52,7 @@ model Service {
   description    String
   booking        Booking[]
   professionalId String
-  imageUrl       String
+  imageUrl       String?
   professional   Professional @relation(fields: [professionalId], references: [id])
   createdAt      DateTime     @default(now())
   updatedAt      DateTime     @updatedAt

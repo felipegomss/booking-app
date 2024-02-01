@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 
 export default function BookingItem() {
   return (
-    <Card className="max-w-96">
+    <Card className="w-full">
       <CardContent className="p-5 grid grid-cols-3">
         <div className="space-y-2 col-span-2">
           <Badge className="bg-emerald-600 text-primary hover:bg-emerald-600">

@@ -14,6 +14,7 @@ export default async function Home() {
   return (
     <>
       <Header />
+
       <div className="p-5">
         <h2 className="text-xl font-bold">Olá, Felipe!</h2>
         <p className="capitalize text-sm text-muted-foreground">
@@ -27,7 +28,9 @@ export default async function Home() {
           <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
             agendamentos
           </h2>
-          <BookingItem />
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ">
+            <BookingItem />
+          </div>
         </div>
         <div className="space-y-3">
           <h2 className="uppercase text-sm text-muted-foreground tracking-tight">

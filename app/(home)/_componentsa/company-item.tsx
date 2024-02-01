@@ -1,8 +1,11 @@
+"use client";
+
 import { Badge } from "@/app/_components/ui/badge";
 import { Button } from "@/app/_components/ui/button";
 import { Card, CardContent } from "@/app/_components/ui/card";
 import { CompanyItemProps } from "@/app/types/company";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 export default function CompanyItem({ company }: CompanyItemProps) {
@@ -31,7 +34,9 @@ export default function CompanyItem({ company }: CompanyItemProps) {
           >
             {company?.address}
           </p>
-          <Button className="w-full mt-3 rounded-lg">Reservar</Button>
+          <Link href={`/companies/${company?.id}`}>
+            <Button className="w-full mt-3 rounded-lg">Reservar</Button>
+          </Link>
         </div>
       </CardContent>
     </Card>

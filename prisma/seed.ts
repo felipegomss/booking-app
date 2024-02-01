@@ -93,7 +93,8 @@ const services = [
     name: "Hidratação",
     description: "Hidratação profunda para cabelo e barba.",
     price: 25.0,
-    imageUrl: "Fios hidratados, macios e brilhantes.",
+    imageUrl:
+      "https://utfs.io/f/c4919193-a675-4c47-9f21-ebd86d1c8e6a-4oen2a.png",
   },
 ];
 
@@ -161,6 +162,10 @@ const professionalRoles = [
 ];
 
 async function main() {
+  await prisma.service.deleteMany();
+  await prisma.professional.deleteMany();
+  await prisma.company.deleteMany();
+
   // Criar um array de profissionais com nomes e roles aleatórios
   const professionals = professionalNames.map((name, index) => ({
     name,
