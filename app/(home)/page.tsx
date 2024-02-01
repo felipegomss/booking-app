@@ -4,9 +4,11 @@ import BookingItem from "../_components/booking-item";
 import Header from "../_components/header";
 import { db } from "../_lib/prisma";
 import { CompanyItemProps } from "../types/company";
-import CompanyItem from "./_componentsa/company-item";
-import Search from "./_componentsa/search";
-import "./_componentsa/styles.css";
+import CompanyItem from "./_components/company-item";
+import Search from "./_components/search";
+import "./_components/styles.css";
+
+import UserName from "./_components/display-username";
 
 export default async function Home() {
   const companies = await db.company.findMany({});
@@ -16,7 +18,7 @@ export default async function Home() {
       <Header />
 
       <div className="p-5">
-        <h2 className="text-xl font-bold">Olá, Felipe!</h2>
+        <UserName />
         <p className="capitalize text-sm text-muted-foreground">
           {format(new Date(), "EEEE',' dd 'de' MMMM", { locale: ptBR })}
         </p>

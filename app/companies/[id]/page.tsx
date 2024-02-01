@@ -8,6 +8,8 @@ import Link from "next/link";
 import React from "react";
 import ServiceItem from "../_components/service-item";
 import { ServiceItemProps } from "@/app/types/service";
+import Menu from "@/app/_components/menu";
+import Header from "../_components/header";
 
 export default async function CompanyDetailsPage({
   params,
@@ -24,22 +26,7 @@ export default async function CompanyDetailsPage({
   return (
     <div>
       <div className="h-[250px] w-full relative">
-        <Link href={"/"}>
-          <Button
-            className="z-50 absolute top-4 left-4"
-            size={"icon"}
-            variant={"outline"}
-          >
-            <ChevronLeftIcon />
-          </Button>
-        </Link>
-        <Button
-          className="z-50 absolute top-4 right-4"
-          size={"icon"}
-          variant={"outline"}
-        >
-          <MenuIcon />
-        </Button>
+        <Header />
         <Image
           src={company.imageUrl}
           fill
