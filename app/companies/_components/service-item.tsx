@@ -25,12 +25,14 @@ import { format, set, setHours, setMinutes } from "date-fns";
 import { ptBR, tr } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { saveBooking } from "../[id]/_actions/save-booking";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Toaster } from "@/app/_components/ui/sonner";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { getDayBookings } from "../[id]/_actions/get-bookings";
+import { Booking } from "@prisma/client";
 
 export default function ServiceItem({
   service,
@@ -42,12 +44,62 @@ export default function ServiceItem({
   const [hour, setHour] = useState<string | undefined>();
   const [worker, setWorker] = useState<ProfessionalProps | undefined>();
   const [loading, setLoading] = useState(false);
+  const [dayBookings, setDayBookings] = useState<Booking[]>([]);
+  const [serviceProfessionals, setServiceProfessionals] = useState<
+    ProfessionalProps[]
+  >([]);
 
   const router = useRouter();
 
+  useEffect(() => {
+    if (!date) return;
+
+    const refreshAvailableHours = async () => {
+      const _dayBookings = await getDayBookings(date, company.id);
+
+      setDayBookings(_dayBookings);
+    };
+
+    refreshAvailableHours();
+  }, [company.id, date]);
+
   const handleBooking = () => {
-    isLogged ? console.log("Booked") : signIn();
+    if (!isLogged) signIn();
   };
+
+  useEffect(() => {
+    if (service && service.serviceProfessionals) {
+      setServiceProfessionals(service.serviceProfessionals);
+    }
+  }, [service]);
+
+  const availableProfessionals = useMemo(() => {
+    if (hour && dayBookings) {
+      const selectedHour = parseInt(hour.split(":")[0]);
+      const selectedMinutes = parseInt(hour.split(":")[1]);
+
+      const unavailableProfessionals = dayBookings
+        .filter((booking) => {
+          const bookingDate = new Date(booking.date);
+          const bookingHour = bookingDate.getHours();
+          const bookingMinutes = bookingDate.getMinutes();
+
+          return (
+            bookingHour === selectedHour && bookingMinutes === selectedMinutes
+          );
+        })
+        .map((booking) => booking.professionalId);
+
+      const _availableProfessionals = serviceProfessionals.filter(
+        (professional) =>
+          !unavailableProfessionals.includes(professional.professional.id)
+      );
+
+      return _availableProfessionals;
+    }
+
+    return serviceProfessionals;
+  }, [hour, dayBookings, serviceProfessionals]);
 
   const timeList = useMemo(() => {
     return date ? generateDayTimeList(date) : [];
@@ -176,7 +228,7 @@ export default function ServiceItem({
                 />
                 {date && (
                   <div className="py-6 px-5 border-y overflow-x-auto flex gap-3">
-                    {timeList.map((time) => (
+                    {timeList?.map((time) => (
                       <Button
                         className="rounded-full border"
                         variant={hour === time ? "default" : "outline"}
@@ -189,23 +241,36 @@ export default function ServiceItem({
                   </div>
                 )}
 
-                {hour && (
+                {hour && date && (
                   <div className="py-6 px-5 border-y overflow-x-auto flex gap-3">
-                    {service.serviceProfessionals.map(
-                      ({ professional }: ProfessionalProps) => (
-                        <Button
-                          className="rounded-full border"
-                          variant={
-                            worker?.id === professional.id
-                              ? "default"
-                              : "outline"
-                          }
-                          key={professional.id}
-                          onClick={() => handleWorker(professional?.id)}
-                        >
-                          {professional.name}
-                        </Button>
+                    {availableProfessionals.length > 0 ? (
+                      availableProfessionals.map(
+                        ({ professional }: ProfessionalProps) => {
+                          return (
+                            <Button
+                              className="rounded-full border"
+                              variant={
+                                worker?.id === professional.id
+                                  ? "default"
+                                  : "outline"
+                              }
+                              key={professional.id}
+                              onClick={() => handleWorker(professional?.id)}
+                            >
+                              {professional.name}
+                            </Button>
+                          );
+                        }
                       )
+                    ) : (
+                      <div>
+                        <h3 className="scroll-m-20 font-semibold tracking-tight">
+                          Nenhum profissional disponível.
+                        </h3>
+                        <p className="text-sm text-muted-foreground">
+                          Por favor, selecione outro horário!
+                        </p>
+                      </div>
                     )}
                   </div>
                 )}
@@ -263,7 +328,7 @@ export default function ServiceItem({
                 <SheetFooter className="px-5">
                   <SheetClose asChild>
                     <Button
-                      disabled={!hour || loading}
+                      disabled={!hour || !worker || loading}
                       onClick={handleBookingConfirmation}
                     >
                       {loading && (
