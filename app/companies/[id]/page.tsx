@@ -33,8 +33,6 @@ export default async function CompanyDetailsPage({
 
   const session = await getServerSession(authOptions);
 
-  console.log(company);
-
   return (
     <div>
       <div className="h-[250px] w-full relative">
@@ -61,6 +59,7 @@ export default async function CompanyDetailsPage({
         {company?.services.map((service: ServiceItemProps, index: number) => {
           return (
             <ServiceItem
+              company={company}
               service={service}
               key={index}
               isLogged={session?.user ? true : false}

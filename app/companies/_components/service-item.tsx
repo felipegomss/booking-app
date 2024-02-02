@@ -10,6 +10,7 @@ import {
 } from "@/app/_components/ui/card";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetFooter,
   SheetHeader,
@@ -20,16 +21,29 @@ import { generateDayTimeList } from "@/app/_helpers/hours";
 import favicon from "@/app/favicon.ico";
 import { ProfessionalProps } from "@/app/types/professional";
 import { ServiceItemProps } from "@/app/types/service";
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-import { signIn } from "next-auth/react";
+import { format, set, setHours, setMinutes } from "date-fns";
+import { ptBR, tr } from "date-fns/locale";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import React, { useMemo, useState } from "react";
+import { saveBooking } from "../[id]/_actions/save-booking";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Toaster } from "@/app/_components/ui/sonner";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-export default function ServiceItem({ service, isLogged }: ServiceItemProps) {
+export default function ServiceItem({
+  service,
+  isLogged,
+  company,
+}: ServiceItemProps) {
+  const { data } = useSession();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [hour, setHour] = useState<string | undefined>();
   const [worker, setWorker] = useState<ProfessionalProps | undefined>();
+  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
 
   const handleBooking = () => {
     isLogged ? console.log("Booked") : signIn();
@@ -54,6 +68,41 @@ export default function ServiceItem({ service, isLogged }: ServiceItemProps) {
         ? { id: workerId, professional: undefined }
         : undefined
     );
+  };
+
+  const handleBookingConfirmation = async () => {
+    setLoading(true);
+    try {
+      if (!date || !hour || !data?.user) return;
+
+      const dateHour = Number(hour.split(":")[0]);
+      const dateMinutes = Number(hour.split(":")[1]);
+
+      const newDate = setMinutes(setHours(date, dateHour), dateMinutes);
+
+      await saveBooking({
+        companyId: company.id,
+        serviceId: service.id,
+        professionalId: worker?.id,
+        date: newDate,
+        userId: (data?.user as any).id,
+      });
+      setDate(undefined);
+      setHour(undefined);
+      toast("Reserva criada com sucesso!", {
+        description: format(newDate, "'Para dia' dd 'de' MMMM, 'às' HH:mm", {
+          locale: ptBR,
+        }),
+        action: {
+          label: "Visualizar",
+          onClick: () => router.push("/reservas"),
+        },
+      });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -190,7 +239,7 @@ export default function ServiceItem({ service, isLogged }: ServiceItemProps) {
                       <div className="flex justify-between">
                         <p className="text-sm text-muted-foreground">Hora</p>
                         <p className="text-sm">{hour}</p>
-                      </div>
+                      </div>{" "}
                       <div className="flex justify-between">
                         <p className="text-sm text-muted-foreground">
                           Profissional
@@ -204,17 +253,32 @@ export default function ServiceItem({ service, isLogged }: ServiceItemProps) {
                             : "Não selecionado"}
                         </p>
                       </div>
+                      <div className="flex justify-between">
+                        <p className="text-sm text-muted-foreground">Local</p>
+                        <p className="text-sm">{company.name}</p>
+                      </div>
                     </CardContent>
                   </Card>
                 )}
                 <SheetFooter className="px-5">
-                  <Button disabled={!hour}>Confirmar reserva</Button>
+                  <SheetClose asChild>
+                    <Button
+                      disabled={!hour || loading}
+                      onClick={handleBookingConfirmation}
+                    >
+                      {loading && (
+                        <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                      )}
+                      Confirmar reserva
+                    </Button>
+                  </SheetClose>
                 </SheetFooter>
               </SheetContent>
             </Sheet>
           </div>
         </div>
       </CardContent>
+      <Toaster />
     </Card>
   );
 }

@@ -1,6 +1,7 @@
-import { Service } from "@prisma/client";
+import { Company, Service } from "@prisma/client";
 
 export interface ServiceItemProps {
   service: Service;
   isLogged?: boolean;
+  company: Company;
 }
