@@ -1,54 +1,72 @@
 import { Badge } from "@/app/_components/ui/badge";
-import { Button } from "@/app/_components/ui/button";
 import { db } from "@/app/_lib/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { CompanyDetailsProps } from "@/app/types/company";
-import { ChevronLeftIcon, MapPinnedIcon, MenuIcon } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
-import React from "react";
-import ServiceItem from "../_components/service-item";
 import { ServiceItemProps } from "@/app/types/service";
-import Menu from "@/app/_components/menu";
+import { MapPinnedIcon } from "lucide-react";
+import { getServerSession } from "next-auth";
+import Image from "next/image";
+import React from "react";
 import Header from "../_components/header";
+import ServiceItem from "../_components/service-item";
 
 export default async function CompanyDetailsPage({
   params,
 }: CompanyDetailsProps) {
   if (!params.id) return null;
-  const company = await db.company.findUnique({
+  const company = await db.company?.findUnique({
     where: {
       id: params.id,
     },
     include: {
-      services: true,
+      services: {
+        include: {
+          serviceProfessionals: {
+            include: {
+              professional: true,
+            },
+          },
+        },
+      },
     },
   });
+
+  const session = await getServerSession(authOptions);
+
+  console.log(company);
+
   return (
     <div>
       <div className="h-[250px] w-full relative">
         <Header />
         <Image
-          src={company.imageUrl}
+          src={company?.imageUrl}
           fill
-          alt={company.name}
+          alt={company?.name}
           className="object-cover opacity-85"
         />
       </div>
       <div className="p-5 py-3 pb-6 border-b-2">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">{company.name}</h1>
-          <Badge className="">{company.category}</Badge>
+          <h1 className="text-xl font-bold">{company?.name}</h1>
+          <Badge className="opacity-50">{company?.category}</Badge>
         </div>
         <div className="flex gap-2 items-center">
           <MapPinnedIcon size={16} />
-          <p className="text-sm text-muted-foreground">{company.address}</p>
+          <p className="text-sm text-muted-foreground">{company?.address}</p>
         </div>
       </div>
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 p-5">
-        {company.services.map((service: ServiceItemProps) => (
-          <ServiceItem service={service} key={service?.service?.id} />
-        ))}
+        {company?.services.map((service: ServiceItemProps, index: number) => {
+          return (
+            <ServiceItem
+              service={service}
+              key={index}
+              isLogged={session?.user ? true : false}
+            />
+          );
+        })}
       </div>
     </div>
   );

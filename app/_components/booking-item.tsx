@@ -1,7 +1,7 @@
 import React from "react";
-import { Card, CardContent } from "./ui/card";
-import { Badge } from "./ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Badge } from "./ui/badge";
+import { Card, CardContent } from "./ui/card";
 
 export default function BookingItem() {
   return (

@@ -18,49 +18,57 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  Booking       Booking[]
+  bookings      Booking[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
 
 model Company {
-  id           String         @id @default(uuid())
-  name         String
-  address      String
-  imageUrl     String
-  category     String
-  services     Service[]
-  booking      Booking[]
-  Professional Professional[]
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-}
-
-model Professional {
-  id        String    @id @default(uuid())
-  name      String
-  company   Company   @relation(fields: [companyId], references: [id])
-  role      String
-  companyId String
-  services  Service[]
-  bookings  Booking[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id            String         @id @default(uuid())
+  name          String
+  address       String
+  imageUrl      String
+  category      String
+  services      Service[]
+  bookings      Booking[]
+  professionals Professional[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 }
 
 model Service {
-  id             String       @id @default(uuid())
-  name           String
-  price          Decimal      @db.Decimal(10, 2)
-  company        Company      @relation(fields: [companyId], references: [id])
-  companyId      String
-  description    String
-  booking        Booking[]
+  id                   String                @id @default(uuid())
+  name                 String
+  price                Decimal               @db.Decimal(10, 2)
+  company              Company               @relation(fields: [companyId], references: [id])
+  companyId            String
+  description          String
+  bookings             Booking[]
+  imageUrl             String
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  serviceProfessionals ServiceProfessional[]
+}
+
+model Professional {
+  id        String                @id @default(uuid())
+  name      String
+  company   Company               @relation(fields: [companyId], references: [id])
+  role      String
+  companyId String
+  services  ServiceProfessional[]
+  bookings  Booking[]
+  createdAt DateTime              @default(now())
+  updatedAt DateTime              @updatedAt
+}
+
+model ServiceProfessional {
+  serviceId      String
   professionalId String
-  imageUrl       String?
+  service        Service      @relation(fields: [serviceId], references: [id])
   professional   Professional @relation(fields: [professionalId], references: [id])
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+
+  @@id([serviceId, professionalId])
 }
 
 model Booking {
@@ -72,7 +80,7 @@ model Booking {
   date           DateTime
   company        Company       @relation(fields: [companyId], references: [id])
   companyId      String
-  Professional   Professional? @relation(fields: [professionalId], references: [id])
+  professional   Professional? @relation(fields: [professionalId], references: [id])
   professionalId String?
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt

@@ -1,4 +1,3 @@
-import { Button } from "./ui/button";
 import {
   CalendarIcon,
   CircleUserIcon,
@@ -7,17 +6,17 @@ import {
   LogOutIcon,
   MenuIcon,
 } from "lucide-react";
+import { signIn, signOut, useSession } from "next-auth/react";
+import Link from "next/link";
+import { Avatar, AvatarImage } from "./ui/avatar";
+import { Button } from "./ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "./ui/sheet";
-import { signIn, signOut, useSession } from "next-auth/react";
-import { Avatar, AvatarImage } from "./ui/avatar";
-import Link from "next/link";
 
 export default function Menu() {
   const { data, status } = useSession();

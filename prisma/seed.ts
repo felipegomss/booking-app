@@ -162,74 +162,49 @@ const professionalRoles = [
 ];
 
 async function main() {
+  // Limpar as tabelas
+  await prisma.serviceProfessional.deleteMany();
   await prisma.service.deleteMany();
   await prisma.professional.deleteMany();
   await prisma.company.deleteMany();
 
-  // Criar um array de profissionais com nomes e roles aleatórios
-  const professionals = professionalNames.map((name, index) => ({
-    name,
-    role: professionalRoles[index % professionalRoles.length],
-  }));
-
-  // Embaralhar o array de profissionais para garantir aleatoriedade
-  for (let i = professionals.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [professionals[i], professionals[j]] = [professionals[j], professionals[i]];
-  }
-
-  // Criar 10 barbearias com nomes e endereços fictícios
-  const companies = [];
-  for (let i = 0; i < 10; i++) {
-    const name = creativeNames[i];
-    const address = addresses[i];
-    const imageUrl = images[i];
-
+  for (let i = 0; i < creativeNames.length; i++) {
     const company = await prisma.company.create({
       data: {
-        name,
-        address,
-        imageUrl: imageUrl,
-        category: "BARBERSHOP",
+        name: creativeNames[i],
+        address: addresses[i],
+        imageUrl: images[i],
+        category: "Barbearia",
       },
     });
 
-    // Selecionar de 1 a 5 profissionais aleatórios
-    const companyProfessionals = professionals.slice(
-      i,
-      i + Math.floor(Math.random() * 5) + 1
-    );
-
-    // Criar os profissionais e associá-los à empresa
-    for (const professional of companyProfessionals) {
-      const createdProfessional = await prisma.professional.create({
+    const numProfessionals = Math.floor(Math.random() * 5) + 1;
+    for (let j = 0; j < numProfessionals; j++) {
+      const professional = await prisma.professional.create({
         data: {
-          ...professional,
-          company: {
-            connect: {
-              id: company.id,
-            },
-          },
+          name: professionalNames[i * numProfessionals + j],
+          role: professionalRoles[j % professionalRoles.length],
+          companyId: company.id,
         },
       });
 
-      for (const service of services) {
-        await prisma.service.create({
+      const numServices = Math.floor(Math.random() * services.length) + 1;
+      for (let k = 0; k < numServices; k++) {
+        const service = await prisma.service.create({
           data: {
-            name: service.name,
-            description: service.description,
-            price: service.price,
+            ...services[k],
             company: {
               connect: {
                 id: company.id,
               },
             },
-            professional: {
-              connect: {
-                id: createdProfessional.id,
-              },
-            },
-            imageUrl: service.imageUrl,
+          },
+        });
+
+        await prisma.serviceProfessional.create({
+          data: {
+            serviceId: service.id,
+            professionalId: professional.id,
           },
         });
       }
@@ -239,8 +214,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
-    process.exit(1);
+    throw e;
   })
   .finally(async () => {
     await prisma.$disconnect();
