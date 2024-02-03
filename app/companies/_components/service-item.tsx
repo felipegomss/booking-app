@@ -17,22 +17,22 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/app/_components/ui/sheet";
+import { Toaster } from "@/app/_components/ui/sonner";
 import { generateDayTimeList } from "@/app/_helpers/hours";
 import favicon from "@/app/favicon.ico";
 import { ProfessionalProps } from "@/app/types/professional";
 import { ServiceItemProps } from "@/app/types/service";
+import { Booking } from "@prisma/client";
+import { ReloadIcon } from "@radix-ui/react-icons";
 import { format, set, setHours, setMinutes } from "date-fns";
 import { ptBR, tr } from "date-fns/locale";
 import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
-import React, { useEffect, useMemo, useState } from "react";
-import { saveBooking } from "../[id]/_actions/save-booking";
-import { ReloadIcon } from "@radix-ui/react-icons";
-import { Toaster } from "@/app/_components/ui/sonner";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import React, { useEffect, useMemo, useState } from "react";
+import { toast } from "sonner";
 import { getDayBookings } from "../[id]/_actions/get-bookings";
-import { Booking } from "@prisma/client";
+import { saveBooking } from "../[id]/_actions/save-booking";
 
 export default function ServiceItem({
   service,
@@ -203,6 +203,9 @@ export default function ServiceItem({
                   className="my-6"
                   fromDate={new Date()}
                   styles={{
+                    caption_start: {
+                      width: "100%",
+                    },
                     head_cell: {
                       width: "100%",
                       textTransform: "capitalize",
@@ -226,6 +229,7 @@ export default function ServiceItem({
                     },
                   }}
                 />
+
                 {date && (
                   <div className="py-6 px-5 border-y overflow-x-auto flex gap-3">
                     {timeList?.map((time) => (
@@ -325,11 +329,12 @@ export default function ServiceItem({
                     </CardContent>
                   </Card>
                 )}
-                <SheetFooter className="px-5">
+                <SheetFooter className="p-5">
                   <SheetClose asChild>
                     <Button
                       disabled={!hour || !worker || loading}
                       onClick={handleBookingConfirmation}
+                      className="w-full"
                     >
                       {loading && (
                         <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />

@@ -3,57 +3,57 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const images = [
-  "https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png",
-  "https://utfs.io/f/45331760-899c-4b4b-910e-e00babb6ed81-16q.png",
   "https://utfs.io/f/5832df58-cfd7-4b3f-b102-42b7e150ced2-16r.png",
-  "https://utfs.io/f/7e309eaa-d722-465b-b8b6-76217404a3d3-16s.png",
   "https://utfs.io/f/178da6b6-6f9a-424a-be9d-a2feb476eb36-16t.png",
-  "https://utfs.io/f/2f9278ba-3975-4026-af46-64af78864494-16u.png",
+  "https://utfs.io/f/7e309eaa-d722-465b-b8b6-76217404a3d3-16s.png",
+  "https://utfs.io/f/c97a2dc9-cf62-468b-a851-bfd2bdde775f-16p.png",
   "https://utfs.io/f/988646ea-dcb6-4f47-8a03-8d4586b7bc21-16v.png",
+  "https://utfs.io/f/2f9278ba-3975-4026-af46-64af78864494-16u.png",
   "https://utfs.io/f/60f24f5c-9ed3-40ba-8c92-0cd1dcd043f9-16w.png",
-  "https://utfs.io/f/f64f1bd4-59ce-4ee3-972d-2399937eeafc-16x.png",
   "https://utfs.io/f/e995db6d-df96-4658-99f5-11132fd931e1-17j.png",
-  "https://utfs.io/f/3bcf33fc-988a-462b-8b98-b811ee2bbd71-17k.png",
   "https://utfs.io/f/5788be0e-2307-4bb4-b603-d9dd237950a2-17l.png",
+  "https://utfs.io/f/45331760-899c-4b4b-910e-e00babb6ed81-16q.png",
   "https://utfs.io/f/6b0888f8-b69f-4be7-a13b-52d1c0c9cab2-17m.png",
+  "https://utfs.io/f/3bcf33fc-988a-462b-8b98-b811ee2bbd71-17k.png",
   "https://utfs.io/f/ef45effa-415e-416d-8c4a-3221923cd10f-17n.png",
-  "https://utfs.io/f/ef45effa-415e-416d-8c4a-3221923cd10f-17n.png",
-  "https://utfs.io/f/a55f0f39-31a0-4819-8796-538d68cc2a0f-17o.png",
-  "https://utfs.io/f/5c89f046-80cd-4443-89df-211de62b7c2a-17p.png",
-  "https://utfs.io/f/23d9c4f7-8bdb-40e1-99a5-f42271b7404a-17q.png",
-  "https://utfs.io/f/9f0847c2-d0b8-4738-a673-34ac2b9506ec-17r.png",
-  "https://utfs.io/f/07842cfb-7b30-4fdc-accc-719618dfa1f2-17s.png",
+  "https://utfs.io/f/f64f1bd4-59ce-4ee3-972d-2399937eeafc-16x.png",
   "https://utfs.io/f/0522fdaf-0357-4213-8f52-1d83c3dcb6cd-18e.png",
+  "https://utfs.io/f/07842cfb-7b30-4fdc-accc-719618dfa1f2-17s.png",
+  "https://utfs.io/f/a55f0f39-31a0-4819-8796-538d68cc2a0f-17o.png",
+  "https://utfs.io/f/9f0847c2-d0b8-4738-a673-34ac2b9506ec-17r.png",
+  "https://utfs.io/f/23d9c4f7-8bdb-40e1-99a5-f42271b7404a-17q.png",
+  "https://utfs.io/f/5c89f046-80cd-4443-89df-211de62b7c2a-17p.png",
+  "https://utfs.io/f/ef45effa-415e-416d-8c4a-3221923cd10f-17n.png",
 ];
 // Nomes criativos para as barbearias
 const creativeNames = [
-  "Barbearia Vintage",
+  "The Dapper Den",
   "Corte & Estilo",
   "Barba & Navalha",
-  "The Dapper Den",
   "Cabelo & Cia.",
-  "Machado & Tesoura",
-  "Barbearia Elegance",
-  "Aparência Impecável",
-  "Estilo Urbano",
   "Estilo Clássico",
+  "Estilo Urbano",
+  "Aparência Impecável",
+  "Machado & Tesoura",
+  "Barbearia Vintage",
+  "Barbearia Elegance",
 ];
 
 // Endereços fictícios para as barbearias
 const addresses = [
-  "Rua da Barbearia, 123",
   "Avenida dos Cortes, 456",
+  "Rua da Barbearia, 123",
   "Praça da Barba, 789",
-  "Travessa da Navalha, 101",
   "Alameda dos Estilos, 202",
-  "Estrada do Machado, 303",
   "Avenida Elegante, 404",
-  "Praça da Aparência, 505",
-  "Rua Urbana, 606",
   "Avenida Clássica, 707",
+  "Rua Urbana, 606",
+  "Estrada do Machado, 303",
+  "Travessa da Navalha, 101",
+  "Praça da Aparência, 505",
 ];
 
-const services = [
+const servicesData = [
   {
     name: "Corte de Cabelo",
     description: "Estilo personalizado com as últimas tendências.",
@@ -163,11 +163,11 @@ const professionalRoles = [
 
 async function main() {
   // Limpar as tabelas
+  await prisma.booking.deleteMany();
   await prisma.serviceProfessional.deleteMany();
   await prisma.service.deleteMany();
   await prisma.professional.deleteMany();
   await prisma.company.deleteMany();
-
   for (let i = 0; i < creativeNames.length; i++) {
     const company = await prisma.company.create({
       data: {
@@ -178,32 +178,33 @@ async function main() {
       },
     });
 
-    const numProfessionals = Math.floor(Math.random() * 5) + 1;
+    let serviceIds = [];
+    for (let serviceData of servicesData) {
+      const service = await prisma.service.create({
+        data: {
+          ...serviceData,
+          companyId: company.id,
+        },
+      });
+      serviceIds.push(service.id);
+    }
+
+    const numProfessionals = Math.floor(Math.random() * 7) + 1;
     for (let j = 0; j < numProfessionals; j++) {
       const professional = await prisma.professional.create({
         data: {
-          name: professionalNames[i * numProfessionals + j],
+          name: professionalNames[j % professionalNames.length],
           role: professionalRoles[j % professionalRoles.length],
           companyId: company.id,
         },
       });
 
-      const numServices = Math.floor(Math.random() * services.length) + 1;
+      const numServices = Math.floor(Math.random() * 4) + 1;
       for (let k = 0; k < numServices; k++) {
-        const service = await prisma.service.create({
-          data: {
-            ...services[k],
-            company: {
-              connect: {
-                id: company.id,
-              },
-            },
-          },
-        });
-
+        const serviceId = serviceIds[k % serviceIds.length];
         await prisma.serviceProfessional.create({
           data: {
-            serviceId: service.id,
+            serviceId: serviceId,
             professionalId: professional.id,
           },
         });

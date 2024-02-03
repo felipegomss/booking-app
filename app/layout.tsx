@@ -17,10 +17,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="">
-      <body className={`${inter.className}`}>
+    <html lang="en" className="dark">
+      <body className={`${inter.className} `}>
         <AuthProvider>
-          <main className="max-w-7xl m-auto">{children}</main>
+          <main className="max-w-7xl m-auto min-h-screen">{children}</main>
           <Footer />
         </AuthProvider>
       </body>

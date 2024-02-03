@@ -1,17 +1,35 @@
-import { format } from "date-fns";
+"user client";
+
+import { format, isFuture } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import BookingItem from "../_components/booking-item";
 import Header from "../_components/header";
 import { db } from "../_lib/prisma";
 import { CompanyItemProps } from "../types/company";
 import CompanyItem from "./_components/company-item";
+import UserName from "./_components/display-username";
 import Search from "./_components/search";
 import "./_components/styles.css";
-
-import UserName from "./_components/display-username";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 export default async function Home() {
+  const session = await getServerSession(authOptions);
   const companies = await db.company.findMany({});
+  const bookings = await db.booking.findMany({
+    where: {
+      userId: (session?.user as any).id,
+    },
+    include: {
+      service: true,
+      company: true,
+      professional: true,
+    },
+  });
+
+  const confirmedBookings = bookings.filter((booking: any) =>
+    isFuture(booking?.date)
+  );
 
   return (
     <>
@@ -26,14 +44,24 @@ export default async function Home() {
 
       <div className="px-2 m-6 space-y-6">
         <Search />
-        <div className="space-y-3">
-          <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
-            agendamentos
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 ">
-            <BookingItem />
+        {session?.user ? (
+          <div className="space-y-3">
+            <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
+              agendamentos
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              {confirmedBookings.map((booking: any) => (
+                <BookingItem
+                  booking={booking}
+                  key={booking.id}
+                  status="CONFIRMADO"
+                />
+              ))}
+            </div>
           </div>
-        </div>
+        ) : (
+          <></>
+        )}
         <div className="space-y-3">
           <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
             recomendados

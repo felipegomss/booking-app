@@ -51,10 +51,10 @@ export default function Menu() {
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <CircleUserIcon size={30} />
-                <h2 className="font-bold">Olá, faça seu login!</h2>
+                <h2 className="font-bold">Olá, junte-se a nós!</h2>
               </div>
               <Button
-                className="flex justify-start gap-3 p-2 px-6 w-full bg-secondary hover:bg-background text-zinc-950"
+                className="flex justify-start gap-3 p-2 px-6 w-full bg-secondary hover:bg-background text-primary"
                 onClick={handleLogin}
               >
                 <LogInIcon size={16} />
@@ -64,14 +64,14 @@ export default function Menu() {
           )}
           <div className="flex flex-col gap-3">
             <Link href={"/"}>
-              <Button className="flex justify-start gap-3 p-2 px-6 w-full bg-background hover:bg-background text-zinc-950">
+              <Button className="flex justify-start gap-3 p-2 px-6 w-full bg-background hover:bg-background text-primary">
                 <HomeIcon size={16} />
                 <p className="text-sm">Início</p>
               </Button>
             </Link>
 
-            <Link href={"/agendamentos"}>
-              <Button className="flex justify-start gap-3 p-2 px-6 w-full bg-background hover:bg-background text-zinc-950">
+            <Link href={"/reservas"}>
+              <Button className="flex justify-start gap-3 p-2 px-6 w-full bg-background hover:bg-background text-primary">
                 <CalendarIcon size={16} />
                 <p className="text-sm">Agendamentos</p>
               </Button>
