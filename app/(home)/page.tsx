@@ -69,11 +69,8 @@ export default async function Home() {
             recomendados
           </h2>
           <div className="flex gap-4 overflow-x-auto hidden-scroll">
-            {companies.map((company: CompanyItemProps, index: number) => (
-              <CompanyItem
-                company={company}
-                key={company.company?.id || index}
-              />
+            {companies.map((company) => (
+              <CompanyItem company={company} key={company?.id} />
             ))}
           </div>
         </div>
@@ -82,11 +79,8 @@ export default async function Home() {
             populares
           </h2>
           <div className="flex gap-4 overflow-x-auto hidden-scroll">
-            {companies.map((company: CompanyItemProps, index: number) => (
-              <CompanyItem
-                company={company}
-                key={company.company?.id || index}
-              />
+            {companies.map((company) => (
+              <CompanyItem company={company} key={company?.id} />
             ))}
           </div>{" "}
         </div>

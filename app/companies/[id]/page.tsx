@@ -38,9 +38,9 @@ export default async function CompanyDetailsPage({
       <div className="h-[250px] w-full relative">
         <Header />
         <Image
-          src={company?.imageUrl}
+          src={company?.imageUrl || ""}
           fill
-          alt={company?.name}
+          alt={company?.name || ""}
           className="object-cover opacity-85"
         />
       </div>
@@ -56,12 +56,12 @@ export default async function CompanyDetailsPage({
       </div>
 
       <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 p-5">
-        {company?.services.map((service: ServiceItemProps, index: number) => {
+        {company?.services.map((service) => {
           return (
             <ServiceItem
               company={company}
               service={service}
-              key={index}
+              key={service.id}
               isLogged={session?.user ? true : false}
             />
           );
