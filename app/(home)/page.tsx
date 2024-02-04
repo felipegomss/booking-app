@@ -11,14 +11,19 @@ import UserName from "./_components/display-username";
 import Search from "./_components/search";
 import "./_components/styles.css";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
+import { authOptions } from "../_lib/auth";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
-  const companies = await db.company.findMany({});
-  const bookings = await db.booking.findMany({
+  const getCompanies = await db.company.findMany({});
+  const getNextBooking = await db.booking.findFirst({
     where: {
-      userId: (session?.user as any).id,
+      date: {
+        gte: new Date(),
+      },
+    },
+    orderBy: {
+      date: "asc",
     },
     include: {
       service: true,
@@ -27,9 +32,10 @@ export default async function Home() {
     },
   });
 
-  const confirmedBookings = bookings.filter((booking: any) =>
-    isFuture(booking?.date)
-  );
+  const [companies, nextBooking] = await Promise.all([
+    getCompanies,
+    session?.user ? getNextBooking : {},
+  ]);
 
   return (
     <>
@@ -47,16 +53,14 @@ export default async function Home() {
         {session?.user ? (
           <div className="space-y-3">
             <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
-              agendamentos
+              próximo
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-              {confirmedBookings.map((booking: any) => (
-                <BookingItem
-                  booking={booking}
-                  key={booking.id}
-                  status="CONFIRMADO"
-                />
-              ))}
+              <BookingItem
+                booking={nextBooking}
+                key={nextBooking.id}
+                status="CONFIRMADO"
+              />
             </div>
           </div>
         ) : (

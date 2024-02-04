@@ -1,6 +1,5 @@
 import { Badge } from "@/app/_components/ui/badge";
 import { db } from "@/app/_lib/prisma";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { CompanyDetailsProps } from "@/app/types/company";
 import { ServiceItemProps } from "@/app/types/service";
 import { MapPinnedIcon } from "lucide-react";
@@ -9,6 +8,7 @@ import Image from "next/image";
 import React from "react";
 import Header from "../_components/header";
 import ServiceItem from "../_components/service-item";
+import { authOptions } from "@/app/_lib/auth";
 
 export default async function CompanyDetailsPage({
   params,

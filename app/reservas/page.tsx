@@ -1,23 +1,24 @@
 import { getServerSession } from "next-auth";
 import React from "react";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-
 import { redirect } from "next/navigation";
 import Header from "../_components/header";
 import BookingItem from "../_components/booking-item";
 import { db } from "../_lib/prisma";
 import { Booking } from "@prisma/client";
-import { isFuture, isPast } from "date-fns";
-import { BookingProps } from "../types/booking";
+
+import { authOptions } from "../_lib/auth";
 
 export default async function ReservasPage() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) return redirect("/");
 
-  const bookings = await db.booking.findMany({
+  const getConfirmedBookings = await db.booking.findMany({
     where: {
       userId: (session.user as any).id,
+      date: {
+        gte: new Date(),
+      },
     },
     include: {
       service: true,
@@ -26,12 +27,24 @@ export default async function ReservasPage() {
     },
   });
 
-  const confirmedBookings = bookings.filter((booking: any) =>
-    isFuture(booking?.date)
-  );
-  const finishedBookings = bookings.filter((booking: any) =>
-    isPast(booking?.date)
-  );
+  const getFinishedBookingsQue = await db.booking.findMany({
+    where: {
+      userId: (session.user as any).id,
+      date: {
+        lt: new Date(),
+      },
+    },
+    include: {
+      service: true,
+      company: true,
+      professional: true,
+    },
+  });
+
+  const [confirmedBookings, finishedBookings] = await Promise.all([
+    getConfirmedBookings,
+    getFinishedBookingsQue,
+  ]);
 
   return (
     <>
