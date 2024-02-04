@@ -58,7 +58,7 @@ export default async function ReservasPage() {
             {confirmedBookings.map((booking: Booking) => (
               <BookingItem
                 booking={booking}
-                key={booking.id}
+                key={booking?.id}
                 status="CONFIRMADO"
               />
             ))}
@@ -72,7 +72,7 @@ export default async function ReservasPage() {
             {finishedBookings.map((booking: Booking) => (
               <BookingItem
                 booking={booking}
-                key={booking.id}
+                key={booking?.id}
                 status="FINALIZADO"
               />
             ))}

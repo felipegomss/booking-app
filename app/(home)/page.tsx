@@ -1,6 +1,4 @@
-"user client";
-
-import { format, isFuture } from "date-fns";
+import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import BookingItem from "../_components/booking-item";
 import Header from "../_components/header";
@@ -50,7 +48,7 @@ export default async function Home() {
 
       <div className="px-2 m-6 space-y-6">
         <Search />
-        {session?.user ? (
+        {session?.user && nextBooking ? (
           <div className="space-y-3">
             <h2 className="uppercase text-sm text-muted-foreground tracking-tight">
               próximo
