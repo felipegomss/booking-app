@@ -62,6 +62,7 @@ export default async function CompanyDetailsPage({
               company={company}
               service={service}
               key={service.id}
+              serviceProfessional={service.serviceProfessionals}
               isLogged={session?.user ? true : false}
             />
           );

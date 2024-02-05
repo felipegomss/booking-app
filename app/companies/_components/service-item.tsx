@@ -38,11 +38,12 @@ export default function ServiceItem({
   service,
   isLogged,
   company,
+  serviceProfessional,
 }: ServiceItemProps) {
   const { data } = useSession();
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [hour, setHour] = useState<string | undefined>();
-  const [worker, setWorker] = useState<ProfessionalProps | undefined>();
+  const [worker, setWorker] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
   const [dayBookings, setDayBookings] = useState<Booking[]>([]);
   const [serviceProfessionals, setServiceProfessionals] = useState<
@@ -68,8 +69,8 @@ export default function ServiceItem({
   };
 
   useEffect(() => {
-    if (service && service.serviceProfessionals) {
-      setServiceProfessionals(service.serviceProfessionals);
+    if (service && serviceProfessional) {
+      setServiceProfessionals(serviceProfessional);
     }
   }, [service]);
 
@@ -114,18 +115,14 @@ export default function ServiceItem({
     setWorker(undefined);
   };
 
-  const handleWorker = (workerId: string) => {
-    setWorker((prevWorker) =>
-      prevWorker === undefined
-        ? { id: workerId, professional: undefined }
-        : undefined
-    );
+  const handleWorker = (workerId: string | undefined) => {
+    setWorker(workerId);
   };
 
   const handleBookingConfirmation = async () => {
     setLoading(true);
     try {
-      if (!date || !hour || !data?.user) return;
+      if (!date || !hour || !worker || !data?.user) return;
 
       const dateHour = Number(hour.split(":")[0]);
       const dateMinutes = Number(hour.split(":")[1]);
@@ -135,7 +132,7 @@ export default function ServiceItem({
       await saveBooking({
         companyId: company.id,
         serviceId: service.id,
-        professionalId: worker?.id,
+        professionalId: worker,
         date: newDate,
         userId: (data?.user as any).id,
       });
@@ -182,7 +179,7 @@ export default function ServiceItem({
               {Intl.NumberFormat("pt-BR", {
                 style: "currency",
                 currency: "BRL",
-              }).format(parseInt(service?.price))}
+              }).format(Number(service?.price))}
             </p>
             <Sheet>
               <SheetTrigger asChild>
@@ -254,7 +251,7 @@ export default function ServiceItem({
                             <Button
                               className="rounded-full border"
                               variant={
-                                worker?.id === professional.id
+                                worker === professional.id
                                   ? "default"
                                   : "outline"
                               }
@@ -290,7 +287,7 @@ export default function ServiceItem({
                               {Intl.NumberFormat("pt-BR", {
                                 style: "currency",
                                 currency: "BRL",
-                              }).format(parseInt(service?.price))}
+                              }).format(Number(service?.price))}
                             </p>
                           </div>
                         </div>
@@ -315,9 +312,9 @@ export default function ServiceItem({
                         </p>
                         <p className="text-sm">
                           {worker
-                            ? service.serviceProfessionals.find(
-                                ({ professional }: ProfessionalProps) =>
-                                  professional.id === worker?.id
+                            ? serviceProfessional.find(
+                                (professional) =>
+                                  professional.professionalId === worker
                               )?.professional.name
                             : "Não selecionado"}
                         </p>
