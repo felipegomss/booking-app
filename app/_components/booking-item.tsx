@@ -2,12 +2,14 @@ import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Badge } from "./ui/badge";
 import { Card, CardContent } from "./ui/card";
-import { BookingProps } from "../types/booking";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "./ui/sheet";
+import { BookingProps } from "../types/booking";
 
 export default function BookingItem({ booking, status }: BookingProps) {
+  const { service, company, professional } = booking;
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -24,17 +26,17 @@ export default function BookingItem({ booking, status }: BookingProps) {
                 >
                   <p className="text-xs">{status}</p>
                 </Badge>
-                <h2 className="font-bold">{booking.service.name}</h2>
+                <h2 className="font-bold">{service.name}</h2>
                 <p className="text-sm text-muted-foreground">
-                  {booking.professional.name}
+                  {professional.name}
                 </p>
                 <div className="flex items-center gap-2">
                   <Avatar className="size-6">
-                    <AvatarImage src={booking.company.imageUrl} />
+                    <AvatarImage src={company.imageUrl} />
                     <AvatarFallback>C</AvatarFallback>
                   </Avatar>
                   <h3 className="text-sm text-muted-foreground">
-                    {booking.company.name}
+                    {company.name}
                   </h3>
                 </div>
               </div>

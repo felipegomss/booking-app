@@ -4,9 +4,8 @@ import { redirect } from "next/navigation";
 import Header from "../_components/header";
 import BookingItem from "../_components/booking-item";
 import { db } from "../_lib/prisma";
-import { Booking } from "@prisma/client";
-
 import { authOptions } from "../_lib/auth";
+import { Booking } from "../types/booking";
 
 export default async function ReservasPage() {
   const session = await getServerSession(authOptions);
@@ -55,9 +54,9 @@ export default async function ReservasPage() {
             confirmados
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 space-y-3">
-            {confirmedBookings.map((booking: Booking) => (
+            {confirmedBookings.map((booking) => (
               <BookingItem
-                booking={booking}
+                booking={booking as Booking}
                 key={booking?.id}
                 status="CONFIRMADO"
               />
@@ -69,9 +68,9 @@ export default async function ReservasPage() {
             finalizados
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 space-y-3">
-            {finishedBookings.map((booking: Booking) => (
+            {finishedBookings.map((booking) => (
               <BookingItem
-                booking={booking}
+                booking={booking as Booking}
                 key={booking?.id}
                 status="FINALIZADO"
               />
